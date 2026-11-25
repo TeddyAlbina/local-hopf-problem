@@ -1,0 +1,3 @@
+$ python t0_certificate.py
+CERTIFIED: V^(2) >= 3/10 rho for all 0 <= t <= 1/100 and all u in [-1,1]
+  (34150 boxes; smallest certified lower bound [0.300004 +/- 3.34e-7])

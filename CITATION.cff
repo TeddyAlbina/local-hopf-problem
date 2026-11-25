@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "The Local Hopf Problem on S^2 x S^2"
+abstract: >-
+  Computer-assisted proof that metrics of positive sectional curvature on
+  S^2 x S^2 converge in C^infinity to the product of round metrics, answering
+  Bettiol's Local Hopf Problem I. Includes the proof, the article, and exact
+  and ball-arithmetic verification code.
+authors:
+  - family-names: Baraiya
+    given-names: Vishal Singh
+    email: realvixhal@gmail.com
+type: software
+version: "1.0"
+date-released: "2026-11-25"
+license: MIT
+repository-code: "https://github.com/vixhal-baraiya/local-hopf-problem"
+keywords:
+  - differential geometry
+  - Riemannian geometry
+  - positive sectional curvature
+  - Hopf conjecture
+  - computer-assisted proof

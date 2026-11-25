@@ -1,0 +1,9 @@
+$ HOPF_BACKEND=flint python weights_ode.py
+Y_0 = -2*(3*u**2 - 7*u - 24)/15
+Y_1 = 2*(36*u**3 - 5*u**2 - 304*u - 1751)/315
+Y_2 = -(232*u**4 + 193*u**3 - 993*u**2 - 5537*u - 53423)/1575
+W_0 = -2*(3*u**2 - 7*u - 24)/(15*(u + 2))
+W_1 = -2*(27*u**3 - 79*u**2 - 347*u + 1247)/(315*(u + 2))
+Residual tilt component at t=0, u=0 = -62/15
+Inverse-Hessian factor = (t + 1)*(t**2 + 8*t + 4)/(4*t)
+Limit of t * V^(2) at u=0 = -3844/225

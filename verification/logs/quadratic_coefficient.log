@@ -1,0 +1,8 @@
+$ HOPF_BACKEND=flint python quadratic_coefficient.py
+With the weight 1/(4h) the equatorial d,d coefficient vanishes identically.
+Metric quadratic and minimizing-plane contribution = -(601*t**6 + 2238*t**5 + 3297*t**4 + 1388*t**3 + 624*t**2 + 384*t + 64)/(100*t**3*(t + 1)**3*(2*t + 1)**2)
+f_bb''(pi/2) (longitude separation derivative) = 260374391/57600 - 42025*sqrt(15)/36
+V at 1 = -3472117/384 + 42025*sqrt(15)/18 ~ 0.368930520372
+V at 1/2 = -781321349/38400 + 42025*sqrt(15)/8 ~ -1.64448966250
+limit of t^3 V as t -> 0+ = -16/25
+Gradient on the product-flat tilt at t=0 = 8/5; Hessian = 0.

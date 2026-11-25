@@ -1,0 +1,11 @@
+$ HOPF_BACKEND=flint python single_separation_weights.py
+A = -4*(t + 1)*(3*t**2 - 1)/(9*t**3 + 48*t**2 + 73*t + 28)
+B = -(6*t**4 + 31*t**3 + 24*t**2 + 15*t + 6)/(9*t**3 + 48*t**2 + 73*t + 28)
+p1 dot p2 = 0
+  product-flat tilt derivative at t -> 0: 0
+  limit of full V: -12758165159/156800 + 42025*sqrt(15)/2 ~ 15.2133338670
+  V at t=1/10: 10.8160777731
+p1 dot p2 = 4/5
+  product-flat tilt derivative at t -> 0: 186/125
+  limit of t^3 V: -8649/3125
+  V at t=1/10: -2401.73692781

@@ -1,0 +1,8 @@
+$ HOPF_BACKEND=flint python jets.py
+parallel [constant, G, G'] = [r**2*(t + 1)**2/((2*t + 1)**2*(r**2 + 2*t + 1)*(2*r**2*t + r**2 + 1)), (r - 1)**2*(r + 1)**2/(2*(r**2 + 1)**2*(2*t + 1)**2), -r*(r - 1)*(r + 1)/((r**2 + 1)**2*(2*t + 1)**2)]
+perpendicular [constant, G, G'] = [(2*r**4*t + r**4 + 2*r**2*t**2 + 2*t + 1)/(2*(2*t + 1)**2*(r**2 + 2*t + 1)*(2*r**2*t + r**2 + 1)), -(r - 1)**2*(r + 1)**2/(2*(r**2 + 1)**2*(2*t + 1)**2), r*(r - 1)*(r + 1)/((r**2 + 1)**2*(2*t + 1)**2)]
+Rotation average = 1/(4*(2*t + 1)**2)
+C(t) = pi**2/(2*sqrt(2*t + 1)*(4*t**2 + 4*t + 1))
+C(1) = sqrt(3)*pi**2/54
+Small t expansion = pi**2/2 - 5*pi**2*t/2 + 35*pi**2*t**2/4 + O(t**3)
+Quadratic d^2 check, parallel and perpendicular axes: [-(r - 1)**2*(r + 1)**2*(t - 1)/(6*(r**2 + 2*t + 1)*(2*r**2*t + r**2 + 1)), (r - 1)**2*(r + 1)**2*(t - 1)/(6*(r**2 + 2*t + 1)*(2*r**2*t + r**2 + 1))]

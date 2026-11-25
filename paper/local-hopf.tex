@@ -1,0 +1,607 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1.15in]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem*{maintheorem}{Main Theorem}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{problem}{Local Hopf Problem I}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\RP}{\mathbb{RP}}
+\newcommand{\sect}{\operatorname{sec}}
+\newcommand{\gprod}{g_{\mathrm{prod}}}
+\newcommand{\gCM}{g_{\mathrm{CM},t}}
+\newcommand{\Gr}{\mathcal{N}}
+\newcommand{\Span}{\operatorname{span}}
+\newcommand{\sym}{\odot}
+\newcommand{\fl}{^{\flat}}
+\newcommand{\codeurl}{\url{https://github.com/vixhal-baraiya/local-hopf-problem}}
+
+\title{The Local Hopf Problem on \texorpdfstring{$S^2\times S^2$}{S2 x S2}}
+
+\author{Vishal Singh Baraiya}
+\email{realvixhal@gmail.com}
+
+\subjclass[2020]{Primary 53C20; Secondary 53C21, 65G20}
+\keywords{Positive sectional curvature, Hopf conjecture, Cheeger deformation, computer-assisted proof}
+
+\begin{document}
+
+\begin{abstract}
+We show that the product of two round metrics on $S^2\times S^2$ is a $C^\infty$-limit of Riemannian metrics with strictly positive sectional curvature, which answers the Local Hopf Problem I posed by Bettiol.
+
+The metrics are obtained in two steps. First we take the Cheeger deformation $g_t$ of the product metric along the diagonal $SO(3)$-action, for small $t>0$. Then we apply a third-order perturbation in the spirit of Brendle and Hung, whose tensors are modified so that the construction works uniformly as $t\to0$.
+
+The proof reduces positivity to three conditions:
+\begin{itemize}[leftmargin=*]
+\item a quadratic growth estimate for the background curvature, which we prove for every $t>0$;
+\item a lower bound for the second-order coefficient of the curvature;
+\item positivity of the third-order coefficient on an equatorial torus.
+\end{itemize}
+The last two are certified by exact rational arithmetic and rigorous interval arithmetic.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+A classical question of H.~Hopf asks whether $S^2\times S^2$ admits a Riemannian metric of positive sectional curvature. The product $\gprod$ of two unit round metrics has nonnegative curvature. Its flat planes are exactly the \emph{mixed} planes $\Span\{(X,0),(0,Y)\}$, and every point carries a circle of them.
+
+Brendle and Hung have recently constructed a metric of positive sectional curvature on $S^2\times S^2$ \cite{BH}. Their metric is a perturbation of a fixed Cheeger deformation of $\gprod$, and it lies at a definite distance from $\gprod$. Bettiol \cite[Introduction]{Be} formulated the following local version of Hopf's question and recorded it as open.
+
+\begin{problem}
+Is there a sequence $g_n$ of metrics on $S^2\times S^2$ with $\sect_{g_n}>0$ that converges to the standard product metric?
+\end{problem}
+
+We answer it affirmatively.
+
+\begin{maintheorem}
+There is a sequence of smooth Riemannian metrics on $S^2\times S^2$ with strictly positive sectional curvature that converges to $\gprod$ in the $C^\infty$ topology.
+\end{maintheorem}
+
+\subsection*{Obstructions}
+The mixed planes of $\gprod$ cannot be made positive at first order.
+\begin{itemize}[leftmargin=*]
+\item By a theorem of Berger, quoted in \cite[\S1.1]{BDS1}, if a one-parameter family $g(s)$ with $g(0)=\gprod$ has $\frac{d}{ds}\big|_{s=0}\sect(\sigma)\ge0$ on all mixed planes, then the derivative vanishes on all of them.
+\item Strake \cite{St1,St2} showed more generally that totally geodesic flat tori obstruct deformations that increase the curvature of all flat planes to first order; see \cite[\S3.4]{Be}.
+\item Bourguignon, Deschamps and Sentenac proved \cite[\S1.3]{BDS1} that for a Riemannian product \emph{without infinitesimal isometries}, no analytic variation issuing from the product has positive curvature for small positive times. This hypothesis excludes $\gprod$, whose isometry group has dimension six. In any case, the metrics we construct form a two-parameter family, not an analytic curve issuing from $\gprod$; see \cite[Remark~3.14]{Be}.
+\item The same authors constructed higher-order variations of $\gprod$ along which the first nonvanishing derivative of the curvature of every mixed plane is positive \cite{BDS2}. These variations lack uniform control near the flat planes. They descend to $\RP^2\times\RP^2$, so by Synge's theorem they cannot have positive curvature \cite[Remark~3.11]{Be}.
+\end{itemize}
+
+\subsection*{Strategy}
+We use a two-parameter family $G_{t,s}$.
+\begin{enumerate}[label=(\arabic*),leftmargin=*]
+\item \emph{Background.} For $t>0$ let $g_t$ be one half of the Cheeger deformation of $\gprod$ along the diagonal $SO(3)$-action. It has $\sect\ge0$, its flat planes form a compact $4$-dimensional submanifold $Z$ of the bundle of $2$-planes, and $2g_t\to\gprod$ smoothly as $t\to0$ (Section~\ref{sec:background}).
+\item \emph{Perturbation.} Following Brendle and Hung, we perturb the background to
+\[ G_{t,s}=g_t+s\,h^{(1)}+s^2h^{(2)}+s^3h^{(3)} . \]
+Their tensors, designed for $t=1$, give a negative second-order coefficient as $t\to0$: the transverse Hessian of the flat planes degenerates like $t^3$. We give first-order weights, normal corrections and a mixed tensor that work for all small $t$ (Section~\ref{sec:perturbation}).
+\item \emph{Reduction.} A perturbation theorem on the bundle of planes (Section~\ref{sec:abstract}) reduces positivity of $G_{t,s}$ for small $s>0$ to three conditions:
+  \begin{itemize}[leftmargin=*]
+  \item a quadratic growth estimate for the background (Section~\ref{sec:growth});
+  \item a lower bound $\kappa\rho$ for the second-order coefficient (Section~\ref{sec:quadratic});
+  \item positivity of the third-order coefficient on the zero set of $\rho$, an equatorial torus (Section~\ref{sec:cubic}).
+  \end{itemize}
+\item \emph{Limit.} For each fixed $t\in(0,\frac1{100}]$ the metrics $G_{t,s}$ have positive curvature for $0<s<s_0(t)$. A diagonal sequence then proves the Main Theorem (Section~\ref{sec:proof}).
+\end{enumerate}
+
+The new metrics are not invariant under the simultaneous antipodal map \[(p_1,p_2)\mapsto(-p_1,-p_2),\] since the tensors $h_a,h_b$ of Section~\ref{sec:perturbation} change sign under it. This is consistent with Synge's theorem: the quotient by this map is orientable and not simply connected, so it carries no metric of positive curvature.
+
+\subsection*{Computer assistance}
+Two statements are proved with the computer:
+\begin{itemize}[leftmargin=*]
+\item the structure and lower bound of the second-order coefficient (Propositions~\ref{prop:structure} and~\ref{prop:bound});
+\item the mean of the third-order coefficient (Proposition~\ref{prop:cubic}).
+\end{itemize}
+All curvature coefficients are computed exactly from the $2$-jets of the metric, in the field $\Q(t,r)$ with $r=\tan(\delta/2)$, where $\delta$ is the separation of the two points. Identities in general position are verified at a set of rotations on which polynomials of degree at most four on $SO(3)$ are determined, so the verification is deterministic. The lower bound is proved by ball arithmetic over the whole parameter range. Section~\ref{sec:computer} describes the computations, and the code and logs are available at \codeurl.
+
+\subsection*{Notation}
+\begin{itemize}[leftmargin=*]
+\item $M=S^2\times S^2$, with points $p=(p_1,p_2)$, $p_i\in S^2\subset\R^3$, and $u=\langle p_1,p_2\rangle$. A pair is \emph{regular} if $p_1\ne\pm p_2$, and \emph{coincident} or \emph{antipodal} otherwise.
+\item For $\omega\in\R^3$ we use the vector fields
+\[ K_\omega=(\omega\times p_1,\ \omega\times p_2),\qquad J_\omega=(\omega\times p_1,\ -\omega\times p_2), \]
+where $K_\omega$ are the Killing fields of the diagonal action.
+\item The superscript $\flat$ lowers an index with $g_t$, and $\alpha\sym\beta=\frac12(\alpha\otimes\beta+\beta\otimes\alpha)$.
+\item $e_x,e_y,e_z$ is the standard basis of $\R^3$, and $h=1+2t$.
+\item $\Gr$ is the bundle of tangent $2$-planes of $M$, a compact $8$-manifold with a fixed Riemannian distance $d_\Gr$.
+\item The curvature tensor is normalized so that $R(X,Y,X,Y)>0$ on positively curved planes.
+\end{itemize}
+
+\section{The background metric}\label{sec:background}
+
+Let $P_p=2I-p_1p_1^{T}-p_2p_2^{T}$, so that $\langle P_p\omega,\omega'\rangle=\gprod(K_\omega,K_{\omega'})$. The Cheeger deformation $\gCM$ is the metric on $M$ for which
+\[ \big(M\times SO(3),\ \gprod+\tfrac1tQ\big)\longrightarrow M,\qquad (p,q)\mapsto q^{-1}p, \]
+is a Riemannian submersion, where $Q$ is the standard inner product on $\mathfrak{so}(3)\cong\R^3$; see \cite{Mu,Z}. Explicitly, $\gCM(X,Y)=\gprod(C_tX,Y)$, where $C_t$ is the identity on $\gprod$-horizontal vectors and satisfies $C_tK_\omega=K_{(I+tP_p)^{-1}\omega}$. We set
+\[ g_t=\tfrac12\,\gCM . \]
+Then $2g_t\to\gprod$ in $C^\infty$ as $t\to0$.
+
+\subsection{The flat locus}
+Let $Z\subset\Gr$ be the set of planes
+\[ \pi_{b,p}=\Span\{(b\times p_1,0),(0,b\times p_2)\}=\Span\{K_b,J_b\},\qquad |b|=1,\ b\perp p_1,\ b\perp p_2 . \]
+At a regular pair, $b=\pm n$ with $n=p_1\times p_2/|p_1\times p_2|$, so there is exactly one such plane. At a coincident or antipodal pair, $b$ ranges over a great circle.
+
+\begin{lemma}\label{lem:Z}
+$Z$ is a compact embedded $4$-dimensional submanifold of $\Gr$, and $C_t$ maps each plane of $Z$ to itself.
+\end{lemma}
+
+\begin{proof}
+$Z$ is the image of the compact $4$-manifold $\{([n],p_1,p_2):[n]\in\RP^2,\ p_1,p_2\in n^\perp\cap S^2\}$. The map onto $Z$ is injective, because the plane determines $n\times p_1$ and hence $[n]$. It is an immersion: varying $p$ moves the base point, and varying $[n]$ with $p$ fixed rotates the first factor of the plane. So it is an embedding.
+
+The field $J_b$ is horizontal, since
+\[ \langle J_b,K_\omega\rangle=\big(b\cdot\omega-(b\cdot p_1)(\omega\cdot p_1)\big)-\big(b\cdot\omega-(b\cdot p_2)(\omega\cdot p_2)\big)=0 . \]
+Moreover $P_pb=2b$, so $C_tK_b=K_b/(1+2t)$. Hence $C_t$ preserves $\Span\{K_b,J_b\}$.
+\end{proof}
+
+Each plane of $Z$ over a regular pair is tangent to the torus $\Gamma\times\Gamma$, where $\Gamma=n^\perp\cap S^2$. This torus is the fixed set of the reflection in the plane $n^\perp$ (applied to both factors), which is an isometry of $g_t$. Hence the torus is totally geodesic. On it we use the commuting fields $U$ (simultaneous rotation of $p_1,p_2$ about $n$) and $V$ (opposite rotation). They satisfy
+\[ g_t(U,U)=\frac1h,\qquad g_t(V,V)=1,\qquad g_t(U,V)=0, \]
+so the torus is flat.
+
+On $Z$ let $\rho=1-\langle n,e_z\rangle^2$, using the line $[n]$ attached to each plane. Its zero set $\Sigma=\{\rho=0\}$ is the lift of the equatorial torus $\{p_1,p_2\perp e_z\}$ together with its tangent planes.
+
+\section{The perturbation}\label{sec:perturbation}
+
+Fix $\lambda_c=\frac1{100}$ and $\lambda_d=\frac1{10}$. Put
+\[ w=p_2-p_1,\qquad v=p_1+p_2,\qquad q_4=2u^2-1, \]
+\[ \Delta_{ij}=(p_2\cdot e_i)(p_2\cdot e_j)-(p_1\cdot e_i)(p_1\cdot e_j) . \]
+
+\subsection{First order}
+Let $h^{(1)}=h_a+h_b+\lambda_ch_c+\lambda_dh_d$ with
+\begin{align*}
+h_a&=P_t(-u)\,K\fl_{v}\sym K\fl_{e_x}+Q(-u)\,K\fl_{w}\sym J\fl_{e_x}, &
+h_c&=K\fl_{e_z}\sym K\fl_{e_z},\\
+h_b&=P_t(u)\,K\fl_{w}\sym K\fl_{e_y}+Q(u)\,K\fl_{v}\sym J\fl_{e_y}, &
+h_d&=K\fl_{e_x}\sym J\fl_{e_z},
+\end{align*}
+where
+\[ P_t(u)=\Big(\frac{16}5+\frac u2-\frac{2u^2}5\Big)\big(1-t^2(1+u)^2\big),\qquad Q(u)=2u^2-\frac{7u}{10}-4 . \]
+
+\subsection{Second order}
+Let
+\[ h^{(2)}=h_{aa}+h_{bb}+\lambda_c^2h_{cc}+2\lambda_c(h_{ac}+h_{bc})+\lambda_d^2h_{dd}+2\lambda_d(h_{ad}+h_{bd})+2\lambda_c\lambda_dh_{cd}, \]
+with
+\begin{align*}
+h_{aa}&=9f_{aa}(u)\,K\fl_{e_x}\sym K\fl_{e_x},\qquad
+h_{bb}=9f_{bb}(u)\,K\fl_{e_y}\sym K\fl_{e_y},\qquad
+h_{cc}=g_t(K_{e_z},K_{e_z})\,K\fl_{e_z}\sym K\fl_{e_z},\\
+h_{ac}&=\tfrac1{20}\langle v,e_z\rangle(-5-14u+3q_4)\,K\fl_{e_x}\sym K\fl_{e_z},\qquad
+h_{bc}=\tfrac1{20}\langle w,e_z\rangle(-5+14u+3q_4)\,K\fl_{e_y}\sym K\fl_{e_z},\\
+h_{dd}&=\tfrac1{4h}\,g_t(J_{e_x},J_{e_x})\,J\fl_{e_z}\sym J\fl_{e_z},\\
+h_{ad}&=\tfrac{\langle w,e_x\rangle}{400}(-406-92u+18q_4)\,K\fl_{e_x}\sym K\fl_{e_z}
++\tfrac{\langle w,e_z\rangle}{200}(-823+154u+9q_4)\,K\fl_{e_x}\sym K\fl_{e_x}\\
+&\qquad-M_t(u)\langle w,e_x\rangle\,J\fl_{e_x}\sym J\fl_{e_z}-N_t(u)\langle w,e_z\rangle\,J\fl_{e_x}\sym J\fl_{e_x},\\
+h_{bd}&=\tfrac{\langle v,e_x\rangle}{400}(-406+92u+18q_4)\,K\fl_{e_y}\sym K\fl_{e_z}
++\tfrac{\langle v,e_z\rangle}{200}(-823-154u+9q_4)\,K\fl_{e_x}\sym K\fl_{e_y}\\
+&\qquad-M_t(-u)\langle v,e_x\rangle\,J\fl_{e_y}\sym J\fl_{e_z}-N_t(-u)\langle v,e_z\rangle\,J\fl_{e_y}\sym J\fl_{e_x},\\
+h_{cd}&=-\tfrac14\big[\varphi_t(u)\,\Delta_{zx}\,J\fl_{e_z}\sym J\fl_{e_z}+\psi_t(u)\,\Delta_{zz}\,J\fl_{e_x}\sym J\fl_{e_z}\big].
+\end{align*}
+
+The scalar profiles are as follows.
+\begin{itemize}[leftmargin=*]
+\item \emph{The profiles $f_{aa},f_{bb}$.} Let $T_n$ be the Chebyshev polynomials, $k=4-\sqrt{15}$, and
+\[ (H_1,\dots,H_6)=\Big(\tfrac{2203841}{1920},\tfrac{5579141}{153600},\tfrac{214597}{103680},\tfrac{48211}{307200},\tfrac{251}{19200},\tfrac{25}{165888}\Big). \]
+Then
+\[ f_{bb}(u)=\sum_{n=1}^{6}H_nT_n(u)-\frac{42025}{6}\sqrt{\frac53}\sum_{n\ge1}\frac{k^n}{n^2}T_n(u),\qquad f_{aa}(u)=f_{bb}(-u). \]
+These are the profiles of \cite[\S5]{BH}, written there in the angle $\theta$ with $u=\cos2\theta$. Since $0<k<1$ and $|T_n^{(j)}|\le n^{2j}$ on $[-1,1]$, the series converge with all derivatives, so $f_{aa}$ and $f_{bb}$ are smooth on $[-1,1]$.
+\item \emph{The normal corrections $M_t,N_t$.} These are the rational functions of Appendix~\ref{app:tables}.
+\item \emph{The mixed profiles $\varphi_t,\psi_t$.} With $D=(1+t)^2-t^2u^2\ge h$,
+\[ \varphi_t=\frac{(1+t)^2+t^2u^2}{hD^2},\qquad \psi_t=-\frac{(1+t)\big(h^2+6ht^2u^2+t^4(u^4-1)\big)}{h^2D^3}. \]
+\end{itemize}
+
+Every coefficient is a polynomial in $p_1,p_2$, divided by a positive function or multiplied by a smooth function of $u$. So $h^{(1)}$ and $h^{(2)}$ are smooth tensors on $M$. The third-order tensor $h^{(3)}$ is defined in Section~\ref{sec:cubic}.
+
+\begin{remark}\label{rem:BH}
+\begin{itemize}[leftmargin=*]
+\item At $t=1$ the weight $\frac1{4h}$ of $h_{dd}$ equals the weight $\frac1{12}$ of \cite{BH}.
+\item Without the terms involving $M_t,N_t$, and with the original $h_{cd}$ of \cite{BH}, the second-order tensors above are those of \cite[\S5]{BH} with $g_t$ in place of $g_1$.
+\item The first-order weights $P_t,Q$ differ from those of \cite{BH}. With the original weights, at a fixed regular pair, $t^3V^{(2)}\to-\frac{16}{25}$ as $t\to0$, where $V^{(2)}$ is the second-order coefficient of Section~\ref{sec:quadratic}.
+\end{itemize}
+Appendix~\ref{app:derivation} explains how each modification arises and why it is necessary.
+\end{remark}
+
+\section{A perturbation theorem on the bundle of planes}\label{sec:abstract}
+
+In this section $\Gr$ is any compact manifold with a Riemannian distance $d$, and $Z\subset\Gr$ is a compact embedded submanifold of codimension $m$. Let $u\colon\Gr\times[0,s_0]\to\R$ be of class $C^4$ with
+\[ u=u_0+s\,u_1+s^2u_2+s^3u_3+O(s^4), \]
+where the $u_k$ are of class $C^4$ and the remainder is uniform on $\Gr$. We assume:
+\begin{enumerate}[label=(H\arabic*),start=0,leftmargin=*]
+\item\label{H0} $u_0=0$ on $Z$, and $u_0\ge\sigma\,d(\cdot,Z)^2$ on $\Gr$ for some $\sigma>0$;
+\item\label{H1} $u_1=0$ on $Z$.
+\end{enumerate}
+
+\begin{lemma}[Minimization]\label{lem:min}
+Let $F(z,s)$ be of class $C^4$ on $\overline B_\delta\times[0,s_0]\subset\R^m\times\R$, depending on a parameter in a compact set, with uniform $C^4$ bounds. Assume
+\[ F(0,0)=0,\qquad F(z,0)\ge\lambda|z|^2,\qquad \partial_sF(0,0)=0 . \]
+Write $F_k=\frac1{k!}\partial_s^kF(\cdot,0)$, and set $H=\nabla^2F_0(0)$, $g=\nabla F_1(0)$ and $\bar z=-H^{-1}g$. Then, uniformly in the parameter,
+\[ \min_{|z|\le\delta}F(z,s)=s^2W_2+s^3W_3+O(s^4), \]
+where
+\begin{align*}
+W_2&=F_2(0)+\tfrac12\,g\cdot\bar z,\\
+W_3&=F_3(0)+\nabla F_2(0)\cdot\bar z+\tfrac12\,\bar z^{T}\nabla^2F_1(0)\,\bar z+\tfrac16\nabla^3F_0(0)[\bar z,\bar z,\bar z].
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+\emph{Minimizers are $O(s)$.} Since $F_1(0)=0$ we have $F_1(z)=O(|z|)$, so $F(z,s)\ge\lambda|z|^2-Cs|z|-Cs^2$. On the other hand $F(0,s)=O(s^2)$. Hence every minimizer satisfies $|z|\le C's$.
+
+\emph{Rescaling.} Write $z=s\zeta$ with $|\zeta|\le C'$. Taylor's theorem gives, uniformly,
+\[ F(s\zeta,s)=s^2\mathcal Q(\zeta)+s^3\mathcal P(\zeta)+O(s^4), \]
+where
+\[ \mathcal Q(\zeta)=W_2+\tfrac12(\zeta-\bar z)^{T}H(\zeta-\bar z),\qquad
+\mathcal P(\zeta)=F_3+\nabla F_2\cdot\zeta+\tfrac12\zeta^{T}\nabla^2F_1\zeta+\tfrac16\nabla^3F_0[\zeta,\zeta,\zeta]. \]
+
+\emph{Upper bound.} The choice $\zeta=\bar z$ gives the upper bound $s^2W_2+s^3\mathcal P(\bar z)+O(s^4)$.
+
+\emph{Lower bound.} We have $\mathcal P(\zeta)\ge\mathcal P(\bar z)-C|\zeta-\bar z|$, and $s^2\lambda a^2-Cs^3a\ge-C^2s^4/(4\lambda)$ for all $a\ge0$. So the minimum is at least $s^2W_2+s^3\mathcal P(\bar z)-C''s^4$. Since $W_3=\mathcal P(\bar z)$, this proves the lemma.
+\end{proof}
+
+\begin{definition}\label{def:U}
+Fix a tubular map $E(x,w)$ defined on the normal bundle of $Z$, with $E(x,0)=x$. By \ref{H0} and \ref{H1}, at each $x\in Z$ the function $(w,s)\mapsto u(E(x,w),s)$ satisfies the hypotheses of Lemma~\ref{lem:min}. Let $U_2(x)$ and $U_3(x)$ denote the resulting coefficients $W_2,W_3$.
+\end{definition}
+
+The functions $U_2,U_3$ are explicit expressions in the derivatives of the $u_k$ at $(x,0)$. The Hessian $H(x)$ is uniformly positive definite, so $U_2$ and $U_3$ are continuous on $Z$, and smooth if $u$ is smooth.
+
+\begin{lemma}[Chart invariance]\label{lem:chart}
+Let $\Omega\subset Z$ be open, let $\Phi\colon\Omega\times B\to\Gr$ be of class $C^4$ with $\Phi(y,0)=y$ and $D\Phi(y,0)$ invertible, and let $\Upsilon>0$ be of class $C^4$. Let $V_2(y),V_3(y)$ be the coefficients $W_2,W_3$ of Lemma~\ref{lem:min} for
+\[ F(z,s)=\Upsilon(y,z)\,u(\Phi(y,z),s) . \]
+Then:
+\begin{enumerate}[label=(\alph*)]
+\item $V_2=\Upsilon(\cdot,0)\,U_2$ on $\Omega$;
+\item if $U_2(y)=0$ and $dU_2(y)=0$, then $V_3(y)=\Upsilon(y,0)\,U_3(y)$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Fix $y$ and write $\Upsilon_0=\Upsilon(y,0)$. Set
+\[ m(x,s)=\min_w u(E(x,w),s),\qquad \mathcal M(y',s)=\min_z\Upsilon(y',z)\,u(\Phi(y',z),s). \]
+By Lemma~\ref{lem:min},
+\[ m(x,s)=s^2U_2(x)+s^3U_3(x)+O(s^4)\quad\text{uniformly in }x\in Z, \]
+\[ \mathcal M(y',s)=s^2V_2(y')+s^3V_3(y')+O(s^4)\quad\text{uniformly for }y'\text{ near }y, \]
+and in both charts the minimizers are $O(s)$. Since $D\Phi(y,0)$ is invertible, every point of $\Gr$ near $y$ can be written as $\Phi(y',z')=E(x,w)$, and $|y'-y|+|z'|$ is comparable to $|x-y|+|w|$.
+
+\emph{Lower bound.} Let $z_s$ be a minimizer for $\mathcal M(y,s)$, and write $\Phi(y,z_s)=E(x_s,w_s)$, so that $|x_s-y|=O(s)$. Then
+\[ \mathcal M(y,s)\ge\big(\Upsilon_0+O(s)\big)\,m(x_s,s). \]
+
+\emph{Upper bound.} Let $w_s$ be a minimizer for $m(y,s)$, and write $E(y,w_s)=\Phi(y'_s,z'_s)$, so that $|y'_s-y|=O(s)$. Then
+\[ \mathcal M(y'_s,s)\le\big(\Upsilon_0+O(s)\big)\,m(y,s). \]
+
+\emph{Part (a).} We have $U_2(x_s)=U_2(y)+O(s)$ and $V_2(y'_s)=V_2(y)+O(s)$. Comparing the coefficients of $s^2$ in the two bounds gives $V_2(y)=\Upsilon_0U_2(y)$.
+
+\emph{Part (b).} If $U_2(y)=0$ and $dU_2(y)=0$, then $U_2(x_s)=O(s^2)$. By (a), $V_2=\Upsilon(\cdot,0)U_2$ near $y$, so also $V_2(y'_s)=O(s^2)$. Thus the $s^2$ terms in both bounds are $O(s^4)$. Since $U_3(x_s)=U_3(y)+O(s)$ and $V_3(y'_s)=V_3(y)+O(s)$, comparing the coefficients of $s^3$ gives $V_3(y)=\Upsilon_0U_3(y)$.
+\end{proof}
+
+\begin{theorem}\label{thm:abstract}
+Assume \ref{H0}, \ref{H1} and
+\begin{enumerate}[label=(H\arabic*),start=2,leftmargin=*]
+\item\label{H2} there are a continuous function $\rho\colon Z\to[0,\infty)$ and $\kappa>0$ such that $U_2\ge\kappa\rho$ on $Z$ and $U_3\ge\kappa$ on $\Sigma=\{\rho=0\}$.
+\end{enumerate}
+Then $\min_\Gr u(\cdot,s)>0$ for all sufficiently small $s>0$.
+\end{theorem}
+
+\begin{proof}
+Fix a small $\delta>0$.
+\begin{itemize}[leftmargin=*]
+\item Where $d(\cdot,Z)\ge\delta$, \ref{H0} gives $u\ge\sigma\delta^2-Cs$.
+\item Every point of the tube $\{d(\cdot,Z)<\delta\}$ has the form $E(x,w)$, and
+\[ u(E(x,w),s)\ge m(x,s)\ge s^2U_2(x)+s^3U_3(x)-Cs^4 . \]
+\item The set $A=\{U_3>\kappa/2\}$ is open and contains $\Sigma$. On $A$ the last bound is at least $s^3\kappa/2-Cs^4$.
+\item The set $Z\setminus A$ is compact and disjoint from $\Sigma$, so $\rho\ge\rho_0>0$ there. On it the bound is at least $s^2\kappa\rho_0-Cs^3$.
+\end{itemize}
+All these lower bounds are positive for small $s>0$.
+\end{proof}
+
+\subsection{Application}\label{sec:application}
+For fixed $t>0$ we apply these results to
+\[ u(\pi,s)=R_{G_{t,s}}(e_1,e_2,e_1,e_2), \]
+where $e_1,e_2$ is a $g_t$-orthonormal basis of $\pi$. This is the curvature of $G_{t,s}$ with the fixed background area normalization, and it has the same sign as $\sect_{G_{t,s}}(\pi)$. The chart data are as follows.
+\begin{itemize}[leftmargin=*]
+\item $\Omega\subset Z$ is the set of planes over regular pairs. It is open and dense in $Z$.
+\item $\Phi$ is the \emph{graph chart}
+\[ \Phi(y,z)=\Span\{U+z_1N_1+z_2N_2,\ V+z_3N_1+z_4N_2\} \]
+at the base point of $y$, where $N_1,N_2$ span the normal directions of the torus $\Gamma\times\Gamma$. Since $\Omega$ projects diffeomorphically onto the regular pairs, $D\Phi(y,0)$ is invertible.
+\item $\Upsilon=|U\wedge V|^2_{g_t}$, so $\Upsilon(\cdot,0)=1/h$.
+\end{itemize}
+In this chart, $\Upsilon u$ is the curvature numerator of $G_{t,s}$ on the tilted plane. We denote its coefficients by $V^{(2)}=V_2$ and $V^{(3)}=V_3$.
+
+\section{The background estimate}\label{sec:growth}
+
+We use the following inequality of Müter and Ziller \cite[Proposition~1.3]{Z}, \cite{Mu}. For all $t>0$ and $\xi,\eta\in T_pM$,
+\begin{equation}\label{eq:Z}
+R_{\mathrm{prod}}(\xi,\eta,\xi,\eta)+\frac{t^3}{4}\big|[P\xi_{\mathfrak m},P\eta_{\mathfrak m}]\big|_Q^2\ \le\ R_{\gCM}\big(C_t^{-1}\xi,C_t^{-1}\eta,C_t^{-1}\xi,C_t^{-1}\eta\big).
+\end{equation}
+Here $P\xi_{\mathfrak m}\in\mathfrak{so}(3)$ is characterized by $Q(P\xi_{\mathfrak m},\omega)=\gprod(\xi,K_\omega)$ for all $\omega$. Write
+\[ a(\xi)=p_1\times\xi_1+p_2\times\xi_2 . \]
+Since $\gprod(\xi,K_\omega)=\langle a(\xi),\omega\rangle$, we have $P\xi_{\mathfrak m}=a(\xi)$ at every point, including coincident and antipodal pairs. The bracket is the cross product.
+
+\begin{lemma}\label{lem:B1}
+Let $t>0$, and let $\xi,\eta\in T_pM$ be $\gprod$-orthonormal with right-hand side of \eqref{eq:Z} less than $\varepsilon^2$. Then
+\[ d_\Gr(\Span\{\xi,\eta\},Z)\le C_0\,(1+t^{-3/2})\,\varepsilon , \]
+where $C_0$ depends neither on $t$ nor on $p$.
+\end{lemma}
+
+\begin{proof}
+If $\varepsilon>\frac18$, the estimate holds as soon as $C_0\ge8\operatorname{diam}(\Gr)$. So assume $\varepsilon\le\frac18$.
+
+\emph{Step 1: two bounds.} For unit spheres, $R_{\mathrm{prod}}(\xi,\eta,\xi,\eta)=|\xi_1\wedge\eta_1|^2+|\xi_2\wedge\eta_2|^2$. Hence \eqref{eq:Z} gives
+\[ |\xi_1\wedge\eta_1|\le\varepsilon,\qquad |\xi_2\wedge\eta_2|\le\varepsilon,\qquad |a(\xi)\times a(\eta)|\le2t^{-3/2}\varepsilon . \]
+
+\emph{Step 2: normal form.} All three quantities depend only on the plane, up to sign. So we may use the orthonormal basis of the plane that diagonalizes $X\mapsto|X_1|^2$. Then $\langle\xi_1,\eta_1\rangle=0$, and orthonormality gives $\langle\xi_2,\eta_2\rangle=0$. Thus $|\xi_1||\eta_1|\le\varepsilon$ and $|\xi_2||\eta_2|\le\varepsilon$. Interchanging $\xi$ and $\eta$ if necessary, we may assume $|\xi_1|^2\ge\frac12$. Then $|\eta_1|\le\sqrt2\varepsilon$, hence $|\eta_2|^2\ge\frac12$, and therefore $|\xi_2|\le\sqrt2\varepsilon$.
+
+\emph{Step 3: comparison vectors.} Let $x=\xi_1/|\xi_1|$ and $y=\eta_2/|\eta_2|$. Then
+\[ |\xi-(x,0)|\le2\varepsilon,\qquad |\eta-(0,y)|\le2\varepsilon . \]
+Let $b_1=p_1\times x$ and $b_2=p_2\times y$. These are unit vectors with $x=b_1\times p_1$ and $y=b_2\times p_2$. Since $|p\times v|\le|v|$, we get $|a(\xi)-b_1|\le2\varepsilon$ and $|a(\eta)-b_2|\le2\varepsilon$, and therefore
+\[ |b_1\times b_2|\le(2t^{-3/2}+5)\varepsilon . \]
+Hence there is $\varsigma\in\{\pm1\}$ with $|b_2-\varsigma b_1|\le C_1\varepsilon$, where $C_1=\sqrt2\,(2t^{-3/2}+5)$.
+
+\emph{Step 4: a nearby plane of $Z$.} Let $b=b_1$. Then $b\perp p_1$ and $|b\cdot p_2|\le C_1\varepsilon$, and we may assume $C_1\varepsilon\le\frac12$. Let $p_2'$ be the normalized projection of $p_2$ onto $b^\perp$, so that $|p_2'-p_2|\le2C_1\varepsilon$, and let $y'=b\times p_2'$. The plane $\Span\{(b\times p_1,0),(0,b\times p_2')\}$ at $(p_1,p_2')$ belongs to $Z$. Its orthonormal basis $(x,0),(0,\varsigma y')$ lies within $(3C_1+2)\varepsilon$ of $(\xi,\eta)$.
+\end{proof}
+
+No step of the proof uses $p_1\ne\pm p_2$, so the estimate is uniform up to coincident and antipodal pairs.
+
+\begin{proposition}\label{prop:growth}
+For every $t>0$ there is $\sigma_t>0$ such that
+\[ \sect_{g_t}(\pi)\ge\sigma_t\,d_\Gr(\pi,Z)^2\qquad\text{for all }\pi\in\Gr . \]
+\end{proposition}
+
+\begin{proof}
+The map $\pi\mapsto C_t\pi$ is a diffeomorphism of $\Gr$ that fixes $Z$ (Lemma~\ref{lem:Z}). Let $L_t$ be a Lipschitz constant of its inverse.
+
+Given $\pi$, let $\xi,\eta$ be a $\gprod$-orthonormal basis of $C_t\pi$, and let $\nu\ge0$ be the right-hand side of \eqref{eq:Z}. Lemma~\ref{lem:B1} gives $d(C_t\pi,Z)\le C(t)\sqrt\nu$, and hence $d(\pi,Z)\le L_tC(t)\sqrt\nu$.
+
+The area of $C_t^{-1}\xi\wedge C_t^{-1}\eta$ is bounded above by compactness, and $\sect_{g_t}=2\sect_{\gCM}$. Together these give the claim.
+\end{proof}
+
+\begin{lemma}\label{lem:firstvar}
+For every $t>0$, the functions $u_0$ and $u_1$ of Section~\ref{sec:application} vanish on $Z$.
+\end{lemma}
+
+\begin{proof}
+At a regular pair, the plane of $Z$ is tangent to the flat, totally geodesic torus $\Gamma\times\Gamma$, so $u_0=0$ there.
+
+On this torus the pullback of each first-order tensor is constant:
+\begin{itemize}[leftmargin=*]
+\item the pullbacks of $h_a$ and $h_b$ vanish, because $p_2\pm p_1$ lies in the plane of $\Gamma$;
+\item those of $h_c$ and $h_d$ involve only the constant projections of $e_z$ and $e_x$ onto $n$.
+\end{itemize}
+For a totally geodesic submanifold, the first variation of the ambient sectional curvature on its tangent planes equals the first variation of the intrinsic curvature of the induced metric \cite[Lemma~3.7]{Be}, after Strake \cite{St1}. A constant pullback keeps the induced metric flat, so $u_1=0$ there.
+
+Both statements are also verified exactly at every frame evaluated in Section~\ref{sec:computer}. By continuity and density of $\Omega$, they hold on all of $Z$.
+\end{proof}
+
+Proposition~\ref{prop:growth} and Lemma~\ref{lem:firstvar} establish \ref{H0} and \ref{H1} for every $t>0$.
+
+\section{The second-order coefficient}\label{sec:quadratic}
+
+Fix a regular pair and the torus $\Gamma\times\Gamma$ through it. Write $n_i=\langle n,e_i\rangle$, and let $x',z'$ be the orthogonal projections of $e_x,e_z$ to the plane of $\Gamma$. Then $n_x^2+n_y^2=\rho$ and $|z'|^2=\rho$.
+
+\begin{proposition}[Structure]\label{prop:structure}
+For every $t>0$ and every regular pair,
+\[ V^{(2)}=n_x^2F^x_t+n_y^2F^y_t+\lambda_c\,n_z\big[n_x\,A_t\cdot z'+n_y\,B_t\cdot z'\big]+\lambda_d^2\big[2n_zn_x\,x'^{T}M^1_tz'+n_x^2\,z'^{T}M^2_tz'\big]. \]
+The quantities $F^x_t$, $F^y_t$ (scalars), $A_t$, $B_t$ (vectors in the plane of $\Gamma$) and $M^1_t$, $M^2_t$ ($2\times2$ matrices, $M^2_t$ symmetric) depend only on $t$ and on the separation of the pair. In particular, the coefficients of $\lambda_d$, $\lambda_c^2$ and $\lambda_c\lambda_d$ vanish identically.
+\end{proposition}
+
+\begin{proof}[Proof (computer-assisted)]
+Use a frame in which $p_1=(1,0,0)$, $p_2=(\cos\delta,\sin\delta,0)$ and $n=(0,0,1)$. In this frame the fixed axes $e_x,e_y,e_z$ are the columns of a rotation $R\in SO(3)$.
+
+Since $V^{(2)}$ is linear in $h^{(2)}$, it can be computed with the values $f(u),f'(u),f''(u)$ of the profiles $f_{aa},f_{bb}$ kept as independent symbols. It is a polynomial of degree two in $(\lambda_c,\lambda_d)$. Each of its coefficients is computed exactly in $\Q(t,r)$, $r=\tan\frac\delta2$.
+
+The tensor $h^{(1)}$ has degree at most two in the entries of $R$, and $h^{(2)}$ degree at most four. So each identity in the proposition is a polynomial identity of degree at most four in the entries of $R$, with coefficients in $\Q(t,r)$.
+
+The restrictions to $SO(3)$ of polynomials of degree at most four in the matrix entries span the matrix coefficients of the irreducible representations $V_l$, $l\le4$. This is a space of dimension $\sum_{l\le4}(2l+1)^2=165$. We fix $165$ rational rotations whose evaluation matrix on all $715$ monomials of degree at most four has rank $165$. A polynomial of degree at most four that vanishes at these rotations vanishes on $SO(3)$.
+
+The unknowns $A_t,B_t,M^1_t,M^2_t$ are determined from some of the rotations, and all identities are then verified exactly at all $165$. The values $F^x_t$ and $F^y_t$ are the base coefficients at the rotations with $n=e_x$ and $n=e_y$.
+\end{proof}
+
+All coefficient functions are explicit. As functions of $(t,u)$, each is rational, or rational plus rational multiples of $f(u),f'(u),f''(u)$ for $f=f_{aa}$ or $f_{bb}$. At $t=0$ they reduce as follows:
+\begin{align*}
+F^y_0(u)&=\tfrac1{400}\big(1152u^6-400u^5-10400u^4-2956u^3+18544u^2+6920u-4643\big)\\
+&\qquad-18\,\partial_\delta^2f_{bb},\\
+F^x_0(u)&=F^y_0(-u),\\
+|A_0|^2+|B_0|^2&=\tfrac1{100}\big(9801-37892u^2+52836u^4-23520u^6\big),\\
+|M^1_0|_F^2&=|M^2_0|_F^2=\tfrac{u^2}8 .
+\end{align*}
+Exact root counting shows $F^y_0>1$ and $|A_0|^2+|B_0|^2<100$ on $[-1,1]$.
+
+\begin{proposition}[Lower bound]\label{prop:bound}
+For $0<t\le t_0=\frac1{100}$ and every regular pair,
+\[ V^{(2)}\ge\kappa_2\,\rho,\qquad\kappa_2=\tfrac3{10}. \]
+\end{proposition}
+
+\begin{proof}[Proof (computer-assisted)]
+Since $n_x^2+n_y^2=\rho$, $|z'|=\sqrt\rho$ and $|x'|,|n_z|\le1$, Proposition~\ref{prop:structure} gives $V^{(2)}\ge\rho\,\mathcal G(t,u)$, where
+\[ \mathcal G=\min(F^x_t,F^y_t)-\lambda_c\sqrt{|A_t|^2+|B_t|^2}-\lambda_d^2\big(2|M^1_t|_F+|M^2_t|_F\big). \]
+We prove $\mathcal G\ge\kappa_2$ on $[0,t_0]\times[-1,1]$ by ball arithmetic with adaptive subdivision of the box. The ingredients are the following.
+\begin{itemize}[leftmargin=*]
+\item Rational functions are evaluated with exact rational coefficients, and the denominators are checked to exclude zero on each box.
+\item The profile jets $f^{(j)}$, $j=0,1,2$, are enclosed on a $u$-interval by the mean value theorem. The values at the midpoint are summed in ball arithmetic up to $n=80$, with an explicit bound for the geometric tail. The derivative bounds come from Markov's inequality $|T_n^{(i)}|\le T_n^{(i)}(1)$ on $[-1,1]$.
+\end{itemize}
+The interval $u\in[-1,1]$ includes the coincident and antipodal limits.
+\end{proof}
+
+The same computation gives $V^{(2)}\ge\rho/10$ for $t\le\frac1{80}$ and $V^{(2)}\ge\rho/50$ for $t\le\frac1{60}$. Some restriction on $t$ is necessary: exact evaluation shows that $V^{(2)}/\rho$ takes negative values at $t=\frac1{50}$.
+
+\begin{corollary}\label{cor:U2}
+For $0<t\le t_0$, $U_2\ge h\kappa_2\,\rho$ on $Z$. Moreover $U_2=0$ and $dU_2=0$ on $\Sigma\cap\Omega$.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:chart}(a), $U_2=hV^{(2)}$ on $\Omega$. Proposition~\ref{prop:bound}, continuity and density of $\Omega$ give the inequality on $Z$. On $\Sigma\cap\Omega$ the smooth function $U_2\ge0$ vanishes, so it attains a minimum there and its differential vanishes.
+\end{proof}
+
+\section{The third-order coefficient on the equatorial torus}\label{sec:cubic}
+
+On $\Sigma$ we have $n=e_z$. Rotating the fixed axes about $e_z$ by an angle $\phi$ is the same as translating along $U$. Each first-order tensor contains at most one factor $e_x$ or $e_y$, each second-order tensor at most two, and $e_z$ is fixed by the rotation. Hence the uncorrected third-order coefficient $V^{(3)}$ of $g_t+sh^{(1)}+s^2h^{(2)}$ is a trigonometric polynomial of degree at most three in $\phi$. Its mean over $\phi$ therefore equals its average over $\phi\in\{0,\frac\pi2,\pi,\frac{3\pi}2\}$.
+
+\begin{proposition}\label{prop:cubic}
+For every $t>0$ and every separation, the mean of $V^{(3)}$ over translations along $U$ is
+\[ \mu_t=\frac{\lambda_c\lambda_d^2}{4h^2}=\frac1{40000\,h^2}. \]
+Moreover $V^{(2)}=0$ on $\Sigma$, and the profiles $f_{aa},f_{bb}$ do not contribute to $\mu_t$.
+\end{proposition}
+
+\begin{proof}[Proof (computer-assisted)]
+At the four rotations, $V^{(3)}$ is computed exactly in $\Q(t,r)$ from the complete tensors with the final amplitudes, with the profile jets kept as symbols. The average is $1/(40000h^2)$, and the profile terms average to zero.
+\end{proof}
+
+The flat coordinates of $\Sigma$ are affine functions of $(\phi,\delta)$, so $\mu_t$ is also the mean of $V^{(3)}$ over $\Sigma$. The total integral is $\lambda_c\lambda_d^2\pi^2/(2h^{5/2})$. For the tensors of \cite{BH} at $t=1$, the same computation gives $\pi^2/(18\sqrt3)$, the value found in \cite[Proposition~5.5]{BH}.
+
+Only the $\lambda_c\lambda_d^2$ term survives, for two reasons:
+\begin{itemize}[leftmargin=*]
+\item for $\lambda_d=0$ the metrics are invariant under the reflection in the equatorial plane, which keeps $\Sigma$ flat and totally geodesic;
+\item the rotation by $\pi$ changes the sign of the $a$ and $b$ channels.
+\end{itemize}
+
+\subsection{The third-order tensor}
+By Corollary~\ref{cor:U2} and Lemma~\ref{lem:chart}(b), $V^{(3)}=U_3/h$ on $\Sigma\cap\Omega$. Here $U_3$ is smooth on $Z$, because the function $u$ of Section~\ref{sec:application} is smooth. Hence $V^{(3)}$ extends to a smooth function on $\Sigma$.
+
+Let $\Delta_\Sigma=hU^2+V^2$ be the Laplacian of the flat metric of $\Sigma$, and let $\chi_t$ be the solution of
+\[ \Delta_\Sigma\chi_t=V^{(3)}-\mu_t,\qquad\int_\Sigma\chi_t=0 . \]
+It exists because $\mu_t$ is the mean of $V^{(3)}$. Extend $\chi_t$ to $M$ by a tubular projection and a cutoff function equal to $1$ near $\Sigma$, and set
+\[ h^{(3)}=2h\,\chi_t\,g_t . \]
+
+To first order, $s^3h^{(3)}$ is the conformal change $e^{2\varphi}g_t$ with $\varphi=s^3h\chi_t$. Since $\Sigma$ is totally geodesic, the linearized sectional curvature of its tangent planes is $-\Delta\varphi$. Contributions from tilting the plane are $O(s^4)$. Hence, for the full metric $G_{t,s}$, the third-order coefficient on $\Sigma\cap\Omega$ equals $V^{(3)}-\Delta_\Sigma\chi_t=\mu_t$. By continuity, $U_3=h\mu_t$ on all of $\Sigma$. The tensor $h^{(3)}$ does not affect $u_0,u_1,u_2$.
+
+\section{Proof of the Main Theorem}\label{sec:proof}
+
+Fix $t\in(0,t_0]$ and let $u(\pi,s)=R_{G_{t,s}}(e_1,e_2,e_1,e_2)$ as in Section~\ref{sec:application}. The hypotheses of Theorem~\ref{thm:abstract} hold:
+\begin{itemize}[leftmargin=*]
+\item \ref{H0} and \ref{H1} by Proposition~\ref{prop:growth} and Lemma~\ref{lem:firstvar};
+\item \ref{H2} with $\kappa=h\min(\kappa_2,\mu_t)>0$, by Corollary~\ref{cor:U2} and Section~\ref{sec:cubic}.
+\end{itemize}
+Hence there is $s_0(t)>0$ such that $G_{t,s}$ has positive sectional curvature for $0<s<s_0(t)$.
+
+Choose $t_j\downarrow0$ in $(0,t_0]$. For each $j$ choose $0<s_j<s_0(t_j)$ with $\|G_{t_j,s_j}-g_{t_j}\|_{C^j}<1/j$; this is possible because the tensors are smooth for fixed $t_j$. Since $2g_{t_j}\to\gprod$ in $C^\infty$, the metrics $2G_{t_j,s_j}$ have positive sectional curvature and converge to $\gprod$ in $C^\infty$. \qed
+
+\section{The computations}\label{sec:computer}
+
+All computations are available, together with complete logs, at\\ \codeurl.
+
+\subsection*{Curvature}
+In the frame of Proposition~\ref{prop:structure}, the metric is expanded to second order in local coordinates around the base point. The curvature tensor is computed directly from the $2$-jet through the Christoffel symbols. The coefficients $V^{(2)}$ and $V^{(3)}$ are then computed by the formulas of Lemma~\ref{lem:min} in the graph chart, with the first-order tilt $\bar z$ obtained by exact Gaussian elimination.
+
+All arithmetic is carried out in $\Q(t,r)$, so every computed identity holds for every $t$ and every separation. Two implementations of this field are used: the rational function field of SymPy, and an implementation on top of the multivariate polynomials of FLINT with canonical reduced fractions. They give identical results.
+
+\subsection*{General position}
+Proposition~\ref{prop:structure} requires $1980$ evaluations of $V^{(2)}$, at $165$ rotations and several values of $(\lambda_c,\lambda_d)$ and profile modes. The rotations come from integer quaternions with entries in $\{-3,\dots,3\}$. They are chosen greedily so that the $165\times715$ evaluation matrix of monomials of degree at most four has rank $165$; this rank is computed exactly over $\mathbb Z$.
+
+\subsection*{Interval certificate}
+Proposition~\ref{prop:bound} is proved with the ball arithmetic of Arb, in FLINT, at $128$ bits of precision. About $3.4\cdot10^4$ boxes are needed, and the smallest certified lower bound is $0.300004$.
+
+\subsection*{Individual channels}
+Separate scripts verify, for every $t$ and every separation, the individual cancellations behind the construction. These are described in Appendix~\ref{app:derivation}.
+
+\appendix
+
+\section{The normal corrections}\label{app:tables}
+
+Let $a=1+t(1+u)$. Then
+\[ M_t(u)=\frac{\sum_{i=0}^{3}t^i m_i(u)}{80h^2a},\qquad N_t(u)=\frac{\sum_{i=0}^{4}t^i n_i(u)}{80h^2a^2}, \]
+with
+\begin{align*}
+m_0&=-134+32u+124u^2-48u^3,\\
+m_1&=-36+116u+192u^2-24u^3-64u^4,\\
+m_2&=-74+159u+617u^2-19u^3-175u^4-36u^5,\\
+m_3&=-212-322u+306u^2+394u^3-94u^4-72u^5,
+\end{align*}
+\begin{align*}
+n_0&=-242-16u+268u^2+336u^3,\\
+n_1&=-812-1566u+1146u^2+1660u^3+456u^4,\\
+n_2&=-1056-3013u-543u^2+2449u^3+1423u^4+124u^5,\\
+n_3&=-618-1957u-1158u^2+792u^3+812u^4+165u^5-36u^6,\\
+n_4&=-212-534u-16u^2+700u^3+300u^4-166u^5-72u^6.
+\end{align*}
+Since $a\ge1$ for $u\in[-1,1]$ and $t\ge0$, these functions are smooth.
+
+\section{How the tensors arise}\label{app:derivation}
+
+This appendix explains the choices in Section~\ref{sec:perturbation}. The proof does not depend on it.
+
+On the torus $\Gamma\times\Gamma$ of a regular pair we have $J\fl_\omega(U)=0$ and $J\fl_\omega(V)=-\langle\omega,n\rangle$. The second-order coefficient is
+\[ V^{(2)}=(\text{fixed-plane coefficient})-\tfrac12\,g^{T}H^{-1}g, \]
+where $g$ is the tilt gradient of the first variation and $H$ is the tilt Hessian of the background.
+
+\subsection{Degeneration as \texorpdfstring{$t\to0$}{t to 0}}
+The tilt Hessian splits into two $2\times2$ sectors, spanned by $\frac12(1,\sigma,1,-\sigma)$ and $\frac12(1,\sigma,-1,\sigma)$ for $\sigma=\pm1$. Write $A,B,D$ for the entries of a sector and $S=D-B^2/A$. Then, uniformly in $u$,
+\[ A\to2,\qquad B/A=t(1-\sigma u)+O(t^2),\qquad S/\big[t^3(1-\sigma u)\big]\to2 . \]
+The soft direction contributes
+\[ \frac{(g_k-Bg_h/A)^2}{2S} \]
+to the penalty, which is of order $t^{-3}$ unless the soft gradient vanishes to order $t^2$. For the first-order tensors of \cite{BH}, the soft gradient at $u=0$ tends to $\frac85$, and $t^3V^{(2)}\to-\frac{16}{25}$. Tuning the weight at a single separation does not help: an affine weight that removes the gradient at $u=0$ still gives $t^3V^{(2)}\to-\frac{8649}{3125}$ at $u=\frac45$.
+
+\subsection{The weights \texorpdfstring{$P_t,Q$}{P, Q}}
+For the $b$ tensor with general weights $P(u)\,K\fl_{w}\sym K\fl_{e_y}+Q(u)\,K\fl_{v}\sym J\fl_{e_y}$, on the torus with normal $e_y$, the soft gradient vanishes at $t=0$ if and only if
+\[ 2(1-u^2)P''+(3-5u)P'-P+\big((1-u)Q\big)'=0 . \]
+For polynomial $P$, integrating from $u=1$ determines $Q$. A search among low-degree $P$ for which the limiting coefficient $F_0$ is positive leads to $P_0$ and $Q$. The factor $1-t^2(1+u)^2$ removes the remaining $O(t)$ part of the soft gradient. The $a$ tensor uses the weights at $-u$, because it is the image of the $b$ tensor under the antipodal map of the first factor.
+
+\subsection{The weight of \texorpdfstring{$h_{dd}$}{h\_dd}}
+On the equatorial torus the second-order coefficient has to vanish. With the weight $\frac1{12}$ of \cite{BH}, the $d,d$ contribution there is $(1-t)\cos^2\delta/(6D)$. With the weight $\frac1{4h}$ it vanishes identically.
+
+\subsection{The normal corrections}
+Reflection in the plane of $\Gamma$ fixes $\Gamma\times\Gamma$. Components of the fixed axes that are even under this reflection contribute nothing to $V^{(2)}$, and products of even and odd components vanish. The odd parts of the $d$ tensor are $n_zD_1(x')+n_xD_2(z')$, where
+\[ D_1(\omega)=K\fl_\omega\sym J\fl_n,\qquad D_2(\omega)=K\fl_n\sym J\fl_\omega . \]
+With the $h_{ad}$ of \cite{BH}, the $a,d$ coefficient is
+\[ M_t(u)\,w_xn_xn_z+N_t(u)\,w_zn_x^2 . \]
+Along $U$, each coordinate of $w$ is a first harmonic and $u$ is constant. The correction terms pull back only to the $VV$ component. Their linearized curvature, $-U^2h(V,V)/2$ with the factor $2$ in front of $h_{ad}$, cancels this coefficient exactly. The same holds for the $b,d$ coefficient, with $v$ and $M_t(-u),N_t(-u)$.
+
+The correction is necessary. If only $h_{ad}$ is corrected, then tilting the normal of the pair $(e_x,e_y)$ towards $e_y$ produces an antipodally odd slope
+\[ \lambda_dM_t(0)=-\lambda_d\frac{106t^3+37t^2+18t+67}{40(1+t)(1+2t)^2}\neq0 . \]
+Since the coefficient vanishes on the equator, this gives negative values on one side.
+
+\subsection{The mixed tensor \texorpdfstring{$h_{cd}$}{h\_cd}}
+Let $C(\omega)=K\fl_n\sym K\fl_\omega$ and $\Delta=p_2p_2^{T}-p_1p_1^{T}$. In the frame $p_1=(1,0)$, $p_2=(\cos\delta,\sin\delta)$, the bilinear form $B$ of the minimized second-order coefficient satisfies
+\[ 4B\big(C(\cdot),D_1(\cdot)\big)=\varphi_t\Delta,\qquad 4\operatorname{sym}B\big(C(\cdot),D_2(\cdot)\big)=\psi_t\Delta . \]
+So without $h_{cd}$ the $c,d$ coefficient is $n_z^2\varphi_t\Delta_{zx}+n_xn_z\psi_t\Delta_{zz}$. Since $U^2\Delta=-4\Delta$, the tensor $h_{cd}$ of Section~\ref{sec:perturbation} cancels this coefficient at every regular pair and every $t>0$.
+
+The tensor of \cite{BH} at this position contains $G(\sin2\theta/\sqrt3)$ with $G(x)=\arctan x/x$. Tilting $n$ towards $e_x$ at $(e_x,e_y)$, it produces the normal slope
+\[ \frac{(1-t)(3t+1)}{4(1+t)^2(1+2t)^2}, \]
+which is nonzero for $0<t<1$.
+
+\subsection{Remaining channels}
+The $c,c$ coefficient vanishes. The coefficient linear in $\lambda_c$ has the form $n_z[n_xA_t+n_yB_t]\cdot z'$, with limits
+\[ A_0=f(u)(p_2+p_1),\qquad B_0=f(-u)(p_2-p_1),\qquad f(v)=\tfrac1{20}(-168v^3+154v^2+148v-99). \]
+The $d,d$ coefficient has the form stated in Proposition~\ref{prop:structure}.
+
+\section*{Acknowledgments}
+The construction, the proofs, the verification code and the exposition were developed with the assistance of the AI models Claude Opus 5.5 (Anthropic), ChatGPT Astra 6.2 (OpenAI) and Gemini 4 Neon (Google). The author takes full responsibility for the content of this paper.
+
+\begin{thebibliography}{BDS2}
+
+\bibitem[Be]{Be}
+R.~G. Bettiol, \emph{On different notions of positivity of curvature}, Ph.D. thesis, University of Notre Dame, 2015.
+
+\bibitem[Be2]{Be2}
+R.~G. Bettiol, \emph{Positive biorthogonal curvature on $S^2\times S^2$}, arXiv:1210.0043.
+
+\bibitem[BDS1]{BDS1}
+J.-P. Bourguignon, A.~Deschamps, and P.~Sentenac, \emph{Conjecture de H. Hopf sur les produits de vari\'et\'es}, Ann. Sci. \'Ecole Norm. Sup. (4) \textbf{5} (1972), 277--302.
+
+\bibitem[BDS2]{BDS2}
+J.-P. Bourguignon, A.~Deschamps, and P.~Sentenac, \emph{Quelques variations particuli\`eres d'un produit de m\'etriques}, Ann. Sci. \'Ecole Norm. Sup. (4) \textbf{6} (1973), 1--16.
+
+\bibitem[BH]{BH}
+S.~Brendle and P.-K. Hung, \emph{A metric on $S^2\times S^2$ with positive sectional curvature}, arXiv:2608.19068.
+
+\bibitem[M\"u]{Mu}
+M.~M\"uter, \emph{Kr\"ummungserh\"ohende Deformationen mittels Gruppenaktionen}, Dissertation, Universit\"at M\"unster, 1987.
+
+\bibitem[St1]{St1}
+M.~Strake, \emph{Variationen von Metriken nichtnegativer Schnittkr\"ummung}, Dissertation, Universit\"at M\"unster, 1986.
+
+\bibitem[St2]{St2}
+M.~Strake, \emph{Curvature increasing metric variations}, Math. Ann. \textbf{276} (1987), 633--641.
+
+\bibitem[Z]{Z}
+W.~Ziller, \emph{Examples of Riemannian manifolds with non-negative sectional curvature}, Surveys in Differential Geometry XI (2007), 63--102.
+
+\end{thebibliography}
+
+\end{document}

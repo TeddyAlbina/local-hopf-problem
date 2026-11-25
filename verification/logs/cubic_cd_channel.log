@@ -1,0 +1,4 @@
+$ HOPF_BACKEND=flint python cubic_cd_channel.py
+Mixed rotation average: 1/(4*(2*t + 1)**2)
+Mixed torus integral: pi**2/(2*(2*t + 1)**(5/2))
+Full cubic mean at lambda_c=1/100, lambda_d=1/10: 1/(40000*(2*t + 1)**2)
