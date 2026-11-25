@@ -1,5 +1,7 @@
 # The Local Hopf Problem on $S^2\times S^2$
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24534220.svg)](https://doi.org/10.5281/zenodo.24534220)
+
 > **Local Hopf Problem I** (Bettiol, 2015). Is there a sequence $g_n$ of metrics on $S^2\times S^2$ with ${\rm sec}_{g_n}>0$ that converges to the standard product metric?
 
 This repository contains a computer-assisted proof that the answer is yes.
@@ -45,6 +47,10 @@ See [verification/README.md](verification/README.md) for what each script certif
 - S. Brendle, P.-K. Hung, *A metric on $S^2\times S^2$ with positive sectional curvature*, [arXiv:2608.19068](https://arxiv.org/abs/2608.19068).
 - W. Ziller, *Examples of Riemannian manifolds with non-negative sectional curvature*, Surveys in Differential Geometry XI (2007).
 - M. Müter, *Krümmungserhöhende Deformationen mittels Gruppenaktionen*, Dissertation, Münster (1987).
+
+## Citation
+
+The code and article are archived on Zenodo: [doi:10.5281/zenodo.24534220](https://doi.org/10.5281/zenodo.24534220) (all versions). Version 1.0 is [doi:10.5281/zenodo.24534221](https://doi.org/10.5281/zenodo.24534221). GitHub's "Cite this repository" button uses [CITATION.cff](CITATION.cff).
 
 ## License
 

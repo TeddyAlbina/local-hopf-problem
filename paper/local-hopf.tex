@@ -29,6 +29,7 @@
 \newcommand{\sym}{\odot}
 \newcommand{\fl}{^{\flat}}
 \newcommand{\codeurl}{\url{https://github.com/vixhal-baraiya/local-hopf-problem}}
+\newcommand{\codedoi}{\href{https://doi.org/10.5281/zenodo.24534221}{doi:10.5281/zenodo.24534221}}
 
 \title{The Local Hopf Problem on \texorpdfstring{$S^2\times S^2$}{S2 x S2}}
 
@@ -105,7 +106,7 @@ Two statements are proved with the computer:
 \item the structure and lower bound of the second-order coefficient (Propositions~\ref{prop:structure} and~\ref{prop:bound});
 \item the mean of the third-order coefficient (Proposition~\ref{prop:cubic}).
 \end{itemize}
-All curvature coefficients are computed exactly from the $2$-jets of the metric, in the field $\Q(t,r)$ with $r=\tan(\delta/2)$, where $\delta$ is the separation of the two points. Identities in general position are verified at a set of rotations on which polynomials of degree at most four on $SO(3)$ are determined, so the verification is deterministic. The lower bound is proved by ball arithmetic over the whole parameter range. Section~\ref{sec:computer} describes the computations, and the code and logs are available at \codeurl.
+All curvature coefficients are computed exactly from the $2$-jets of the metric, in the field $\Q(t,r)$ with $r=\tan(\delta/2)$, where $\delta$ is the separation of the two points. Identities in general position are verified at a set of rotations on which polynomials of degree at most four on $SO(3)$ are determined, so the verification is deterministic. The lower bound is proved by ball arithmetic over the whole parameter range. Section~\ref{sec:computer} describes the computations. The code and logs are available at \codeurl, and the version used for this paper is archived as \cite{code}.
 
 \subsection*{Notation}
 \begin{itemize}[leftmargin=*]
@@ -484,7 +485,7 @@ Choose $t_j\downarrow0$ in $(0,t_0]$. For each $j$ choose $0<s_j<s_0(t_j)$ with 
 
 \section{The computations}\label{sec:computer}
 
-All computations are available, together with complete logs, at\\ \codeurl.
+All computations are available, together with complete logs, at\\ \codeurl. The version used for this paper is archived as \cite{code}.
 
 \subsection*{Curvature}
 In the frame of Proposition~\ref{prop:structure}, the metric is expanded to second order in local coordinates around the base point. The curvature tensor is computed directly from the $2$-jet through the Christoffel symbols. The coefficients $V^{(2)}$ and $V^{(3)}$ are then computed by the formulas of Lemma~\ref{lem:min} in the graph chart, with the first-order tilt $\bar z$ obtained by exact Gaussian elimination.
@@ -574,6 +575,9 @@ The $d,d$ coefficient has the form stated in Proposition~\ref{prop:structure}.
 The construction, the proofs, the verification code and the exposition were developed with the assistance of the AI models Claude Opus 5.5 (Anthropic), ChatGPT Astra 6.2 (OpenAI) and Gemini 4 Neon (Google). The author takes full responsibility for the content of this paper.
 
 \begin{thebibliography}{BDS2}
+
+\bibitem[Ba]{code}
+V.~S. Baraiya, \emph{The Local Hopf Problem on $S^2\times S^2$: proof, article and verification code}, version~1.0, Zenodo, 2026, \codedoi.
 
 \bibitem[Be]{Be}
 R.~G. Bettiol, \emph{On different notions of positivity of curvature}, Ph.D. thesis, University of Notre Dame, 2015.

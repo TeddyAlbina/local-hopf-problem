@@ -14,6 +14,14 @@ type: software
 version: "1.0"
 date-released: "2026-11-25"
 license: MIT
+doi: "10.5281/zenodo.24534220"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24534220"
+    description: "Concept DOI (all versions)"
+  - type: doi
+    value: "10.5281/zenodo.24534221"
+    description: "Version 1.0"
 repository-code: "https://github.com/vixhal-baraiya/local-hopf-problem"
 keywords:
   - differential geometry
