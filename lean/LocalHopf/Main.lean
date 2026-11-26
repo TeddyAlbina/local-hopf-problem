@@ -3,12 +3,9 @@ Copyright (c) 2026. Released under the MIT License (see ../../LICENSE).
 
 # The main theorem, assembled from its inputs
 
-Mathlib does not yet have sectional curvature of Riemannian metrics on manifolds, the bundle of
-tangent 2-planes, Cheeger deformations, or the `C^∞` topology on metrics. The geometric objects
-are therefore taken as *data* in the structure `LocalHopfInput`, and every statement that PROOF.md
-obtains from differential geometry, from the literature, or from a verification script is a
-*field* of that structure, with its source in the docstring. Nothing is postulated with `axiom`,
-and no proof uses `sorry`.
+The structure `LocalHopfInput` supplies the geometric objects and the imported estimates.
+In particular, `tube` supplies the lower bounds after normal minimization in PROOF.md §3.
+The application uses those bounds directly.
 
 `local_hopf` then derives, with every step checked by Lean:
 
@@ -18,7 +15,7 @@ and no proof uses `sorry`.
 3. hypothesis (H2) of Theorem 3.4 with `κ = h·min(3/10, μ_t)`;
 4. positivity of `G_{t,s}` for `0 < s < s₀(t)` (Theorem 3.4, `eventually_positive`);
 5. a sequence of positively curved metrics converging to `g_prod` in `C^∞`
-   (section 7, `diagonal_sequence`).
+   (section 7, `diagonal_parameters`).
 -/
 import LocalHopf.Profiles
 import LocalHopf.Perturbation
@@ -32,7 +29,7 @@ open Set Filter Topology Profiles Matrix
 /-- The threshold `t₀ = 1/100` of Proposition 5.2. -/
 noncomputable def t₀ : ℝ := 1 / 100
 
-/-- The inputs of the proof. Each field is labelled with where PROOF.md gets it:
+/-- The inputs of the proof, with source labels for the geometric and computational estimates.
 
 * **[geometry]** standard differential geometry not yet in Mathlib;
 * **[Ziller]** the curvature inequality of Ziller / Müter for Cheeger deformations (§4);
@@ -48,15 +45,18 @@ structure LocalHopfInput where
   /-- The product of unit round metrics. -/
   gprod : Met
   /-- `g t = 2 g_t`, twice the background (scaling does not change the sign of `sec`). -/
-  g : ℝ → Met
-  /-- `G t s = 2 G_{t,s}`. -/
-  G : ℝ → ℝ → Met
-  /-- **[geometry]** `2 g_t → g_prod` in `C^∞` as `t → 0⁺` (§1). -/
-  g_tendsto : ∀ j, Tendsto (fun t => dist.d j (g t) gprod) (𝓝[>] 0) (𝓝 0)
-  /-- **[geometry]** At fixed `t` the tensors `h⁽ⁱ⁾` are smooth, so `G_{t,s} → g_t` in each `C^j`
-  as `s → 0⁺` (§2, §7). -/
-  G_tendsto : ∀ t ∈ Ioc 0 t₀, ∀ j,
-    Tendsto (fun s => dist.d j (G t s) (g t)) (𝓝[>] 0) (𝓝 0)
+  g : Ioc 0 t₀ → Met
+  /-- At fixed `t`, the polynomial tensor of §2 is positive definite for `0 < s < radius t`
+  by openness and compactness of the base. -/
+  radius : Ioc 0 t₀ → Ioi (0 : ℝ)
+  /-- The scaled metric `2 G_{t,s}` on its Riemannian parameter interval. -/
+  G : (t : Ioc 0 t₀) → Ioo 0 (radius t).1 → Met
+  /-- **[geometry]** `2 g_t → g_prod` in each `C^j` as the admissible `t → 0⁺` (§1). -/
+  g_tendsto : ∀ j, Tendsto (fun t => dist.d j (g t) gprod) (comap Subtype.val (𝓝[>] 0)) (𝓝 0)
+  /-- **[geometry]** At fixed `t`, the smooth tensors give convergence in each `C^j`
+  as `s → 0⁺` in the metric window (§2, §7). -/
+  G_tendsto : ∀ t j, Tendsto (fun s => dist.d j (G t s) (g t))
+    (comap Subtype.val (𝓝[>] 0)) (𝓝 0)
   /-- The bundle `𝒩` of tangent 2-planes. -/
   𝒩 : Type
   /-- The flat locus `Z ⊂ 𝒩`, a compact embedded 4-manifold (§1). -/
@@ -96,7 +96,7 @@ structure LocalHopfInput where
   M1 : ℝ → ℝ → Matrix (Fin 2) (Fin 2) ℝ
   M2 : ℝ → ℝ → Matrix (Fin 2) (Fin 2) ℝ
   /-- `u t π s = R_{G_{t,s}}(e₁, e₂, e₁, e₂)` for a `g_t`-orthonormal basis of `π`. -/
-  u : ℝ → 𝒩 → ℝ → ℝ
+  u : (t : Ioc 0 t₀) → 𝒩 → Ioo 0 (radius t).1 → ℝ
   /-- The coefficients `U₂, U₃` of Definition 3.2. -/
   U₂ : ℝ → Z → ℝ
   U₃ : ℝ → Z → ℝ
@@ -105,15 +105,15 @@ structure LocalHopfInput where
   U₃_cont : ∀ t ∈ Ioc 0 t₀, Continuous (U₃ t)
   /-- **[geometry]** The sign of `u` is the sign of `sec_{G_{t,s}}` (§3, "How it is applied"),
   and `sec_{2G} = sec_G / 2`. -/
-  sign : ∀ t ∈ Ioc 0 t₀, ∀ s, 0 < s → (∀ π, 0 < u t π s) → PosSec (G t s)
-  /-- **[Ziller] + [analysis]** The estimates used in the proof of Theorem 3.4:
-  away from `Z`, `u ≥ σδ² - Cs` (Prop. 4.2, from Ziller's inequality and Lemma 4.1);
-  in the tube, `u ≥ s²U₂ + s³U₃ - Cs⁴` (Lemma 3.1 with (H0) and Lemma 4.3 (H1), for the
-  `C⁴` expansion of `u`; see `minimization_lower_bound` for the step from the Taylor bounds). -/
-  tube : ∀ t ∈ Ioc 0 t₀, ∃ (far : 𝒩 → Prop) (proj : 𝒩 → Z) (a C s₁ : ℝ), 0 < a ∧ 0 < s₁ ∧
-    (∀ π s, 0 < s → s ≤ s₁ → far π → a - C * s ≤ u t π s) ∧
-    (∀ π s, 0 < s → s ≤ s₁ → ¬ far π →
-      s ^ 2 * U₂ t (proj π) + s ^ 3 * U₃ t (proj π) - C * s ^ 4 ≤ u t π s)
+  sign : ∀ t s, (∀ π, 0 < u t π s) → PosSec (G t s)
+  /-- **[Ziller] + [analysis]** The far and near lower estimates in the proof of Theorem 3.4.
+  The far estimate uses Proposition 4.2. The near estimate includes the application of
+  Lemma 3.1 to the tubular chart using (H0) and Lemma 4.3. -/
+  tube : ∀ t, ∃ (far : 𝒩 → Prop) (proj : 𝒩 → Z) (a C : ℝ) (s₁ : Ioo 0 (radius t).1),
+    0 < a ∧
+    (∀ π (s : Ioo 0 (radius t).1), (s : ℝ) ≤ s₁ → far π → a - C * s ≤ u t π s) ∧
+    (∀ π (s : Ioo 0 (radius t).1), (s : ℝ) ≤ s₁ → ¬ far π →
+      (s : ℝ) ^ 2 * U₂ t (proj π) + (s : ℝ) ^ 3 * U₃ t (proj π) - C * (s : ℝ) ^ 4 ≤ u t π s)
   /-- **[script: `full_metric_check.py`, part A] + [analysis: Lemma 3.3]**
   Proposition 5.1 in the graph chart, transported to `U₂ = h V⁽²⁾` by Lemma 3.3. -/
   U₂_normal_form : ∀ t ∈ Ioc 0 t₀, ∀ x ∈ Ω,
@@ -177,22 +177,41 @@ theorem H2 {t : ℝ} (ht : t ∈ Ioc 0 t₀) :
     exact mul_le_mul_of_nonneg_left (min_le_right _ _) hh0.le
 
 /-- **Positivity at fixed `t`** (section 7, first paragraph): Theorem 3.4 gives `s₀(t) > 0`. -/
-theorem pos_small_s {t : ℝ} (ht : t ∈ Ioc 0 t₀) :
-    ∃ s₀ > 0, ∀ s, 0 < s → s < s₀ → I.PosSec (I.G t s) := by
-  obtain ⟨hκ, hU₂, hU₃⟩ := I.H2 ht
-  obtain ⟨far, proj, a, C, s₁, ha, hs₁, hfar, hnear⟩ := I.tube t ht
-  obtain ⟨s₀, hs₀, hpos⟩ := eventually_positive (I.u t) (I.U₂ t) (I.U₃ t) I.ρ (I.U₃_cont t ht)
-    I.ρ_cont _ hκ I.ρ_nonneg hU₂ hU₃ far proj a C s₁ ha hs₁ hfar hnear
-  exact ⟨s₀, hs₀, fun s hs hss => I.sign t ht s hs fun π => hpos π s hs hss⟩
+theorem pos_small_s (t : Ioc 0 t₀) :
+    ∃ s₀ > 0, ∀ s : Ioo 0 (I.radius t).1, (s : ℝ) < s₀ → I.PosSec (I.G t s) := by
+  classical
+  obtain ⟨hκ, hU₂, hU₃⟩ := I.H2 t.2
+  obtain ⟨far, proj, a, C, s₁, ha, hfar, hnear⟩ := I.tube t
+  -- The scalar lemma accepts a function on ℝ. Its estimates are used only up to s₁.
+  let u (π : I.𝒩) (s : ℝ) := if hs : s ∈ Ioo 0 (I.radius t).1 then I.u t π ⟨s, hs⟩ else 0
+  have hwindow {s : ℝ} (hs : 0 < s) (hle : s ≤ s₁) : s ∈ Ioo 0 (I.radius t).1 :=
+    ⟨hs, hle.trans_lt s₁.2.2⟩
+  obtain ⟨s₀, hs₀, hpos⟩ := eventually_positive u (I.U₂ t) (I.U₃ t) I.ρ (I.U₃_cont t t.2)
+    I.ρ_cont _ hκ I.ρ_nonneg hU₂ hU₃ far proj a C s₁ ha s₁.2.1
+    (fun π s hs hle hf => by
+      simpa only [u, dite_eq_left (hwindow hs hle)] using hfar π ⟨s, hwindow hs hle⟩ hle hf)
+    (fun π s hs hle hn => by
+      simpa only [u, dite_eq_left (hwindow hs hle)] using hnear π ⟨s, hwindow hs hle⟩ hle hn)
+  refine ⟨s₀, hs₀, fun s hs => I.sign t s fun π => ?_⟩
+  simpa only [u, dite_eq_left s.2] using hpos π s s.2.1 hs
 
 end LocalHopfInput
+
+/-- Section 7 with the parameter sequences retained. -/
+theorem local_hopf_parameters (I : LocalHopfInput) :
+    ∃ (tn : ℕ → Ioc 0 t₀) (sn : (n : ℕ) → Ioo 0 (I.radius (tn n)).1),
+      StrictAnti (fun n => (tn n : ℝ)) ∧ Tendsto (fun n => (tn n : ℝ)) atTop (𝓝[>] 0) ∧
+      Tendsto (fun n => (sn n : ℝ)) atTop (𝓝[>] 0) ∧ (∀ n, I.PosSec (I.G (tn n) (sn n))) ∧
+      I.dist.TendstoCInf (fun n => I.G (tn n) (sn n)) I.gprod :=
+  diagonal_parameters I.dist I.PosSec t₀ (by norm_num [t₀])
+    I.radius I.G I.g I.gprod I.pos_small_s I.G_tendsto I.g_tendsto
 
 /-- **Main theorem** (Local Hopf Problem I). Given the inputs listed in `LocalHopfInput`, there is
 a sequence of metrics on `S² × S²` with strictly positive sectional curvature converging to the
 product of round metrics in `C^∞`. -/
 theorem local_hopf (I : LocalHopfInput) :
-    ∃ x : ℕ → I.Met, (∀ n, I.PosSec (x n)) ∧ I.dist.TendstoCInf x I.gprod :=
-  diagonal_sequence I.dist I.PosSec I.G I.g I.gprod t₀ (by norm_num [t₀])
-    (fun t ht => I.pos_small_s ht) I.G_tendsto I.g_tendsto
+    ∃ x : ℕ → I.Met, (∀ n, I.PosSec (x n)) ∧ I.dist.TendstoCInf x I.gprod := by
+  obtain ⟨tn, sn, _, _, _, hp, hd⟩ := local_hopf_parameters I
+  exact ⟨fun n => I.G (tn n) (sn n), hp, hd⟩
 
 end LocalHopf

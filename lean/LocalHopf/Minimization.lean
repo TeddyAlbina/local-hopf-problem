@@ -14,9 +14,10 @@ expansion of a `C⁴` function provides:
       `F(sζ, s) ≥ s² Qf(ζ) + s³ Pf(ζ) - C s⁴`
   with `Qf(ζ) ≥ W₂ + λ'|ζ - z̄|²` and `Pf(ζ) ≥ Pf(z̄) - L|ζ - z̄|`.
 
-It also proves the completing-the-square identity (`complete_square`) that defines `W₂` and
-`z̄ = -H⁻¹g`. The Taylor step itself — that a `C⁴` function satisfies (a) and (b) with constants
-uniform over a compact parameter set — is the analytic input recorded in `Main.lean`.
+It also proves the completing-the-square identity (`complete_square`) given a solution of
+`H z̄ = -g`. A geometric application must derive the Taylor estimates with constants uniform over
+the compact parameter set. The `tube` field in `Main.lean` assumes the resulting near-region
+lower bound and the separate far-region estimate.
 
 The proof follows PROOF.md: minimizers are `O(s)` (`norm_le_of_small_value`), and the key
 inequality is `s²λa² - C s³a ≥ -C² s⁴ / (4λ)` (`quad_lower`).

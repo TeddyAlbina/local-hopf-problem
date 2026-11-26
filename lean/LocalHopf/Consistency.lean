@@ -22,9 +22,10 @@ noncomputable def toyInput : LocalHopfInput where
   PosSec := fun _ => True
   gprod := ()
   g := fun _ => ()
+  radius := fun _ => ⟨1, (zero_lt_one : (0 : ℝ) < 1)⟩
   G := fun _ _ => ()
   g_tendsto := fun _ => tendsto_const_nhds
-  G_tendsto := fun _ _ _ => tendsto_const_nhds
+  G_tendsto := fun _ _ => tendsto_const_nhds
   𝒩 := Unit
   Z := Unit
   ρ := fun _ => 0
@@ -51,9 +52,9 @@ noncomputable def toyInput : LocalHopfInput where
   U₃ := fun t _ => hh t * mu t
   U₂_cont := fun _ _ => continuous_const
   U₃_cont := fun _ _ => continuous_const
-  sign := fun _ _ _ _ _ => trivial
-  tube := fun _ _ => ⟨fun _ => True, fun _ => (), 1, 0, 1, one_pos, one_pos,
-    fun _ _ _ _ _ => by norm_num, fun _ _ _ _ h => absurd trivial h⟩
+  sign := fun _ _ _ => trivial
+  tube := fun _ => ⟨fun _ => True, fun _ => (), 1, 0, ⟨1 / 2, by norm_num, by norm_num⟩, one_pos,
+    fun _ _ _ _ => by norm_num, fun _ _ _ h => absurd trivial h⟩
   U₂_normal_form := fun _ _ _ _ => by simp [V2form]
   certificate := fun _ _ _ _ => by
     simp [Gcal, frob]; norm_num
