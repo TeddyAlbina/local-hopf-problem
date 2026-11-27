@@ -15,9 +15,10 @@ expansion of a `C⁴` function provides:
   with `Qf(ζ) ≥ W₂ + λ'|ζ - z̄|²` and `Pf(ζ) ≥ Pf(z̄) - L|ζ - z̄|`.
 
 It also proves the completing-the-square identity (`complete_square`) given a solution of
-`H z̄ = -g`. A geometric application must derive the Taylor estimates with constants uniform over
-the compact parameter set. The `tube` field in `Main.lean` assumes the resulting near-region
-lower bound and the separate far-region estimate.
+`H z̄ = -g`. The modules `UniformTube` and `NormalMinimum` derive these estimates with uniform
+constants on compact chart families and prove the two-sided expansion of the fiber minimum.
+The `tube` field in `Main.lean` assumes the resulting near-region lower bound and the separate
+far-region estimate.
 
 The proof follows PROOF.md: minimizers are `O(s)` (`norm_le_of_small_value`), and the key
 inequality is `s²λa² - C s³a ≥ -C² s⁴ / (4λ)` (`quad_lower`).

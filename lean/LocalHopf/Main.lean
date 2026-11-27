@@ -5,7 +5,8 @@ Copyright (c) 2026. Released under the MIT License (see ../../LICENSE).
 
 The structure `LocalHopfInput` supplies the geometric objects and the imported estimates.
 In particular, `tube` supplies the lower bounds after normal minimization in PROOF.md §3.
-The application uses those bounds directly.
+The application uses those bounds directly. The geometric locus and frame fields can be
+supplied together from the concrete incidence-space construction in `FlatLocus.lean`.
 
 `local_hopf` then derives, with every step checked by Lean:
 
@@ -206,9 +207,10 @@ theorem local_hopf_parameters (I : LocalHopfInput) :
   diagonal_parameters I.dist I.PosSec t₀ (by norm_num [t₀])
     I.radius I.G I.g I.gprod I.pos_small_s I.G_tendsto I.g_tendsto
 
-/-- **Main theorem** (Local Hopf Problem I). Given the inputs listed in `LocalHopfInput`, there is
-a sequence of metrics on `S² × S²` with strictly positive sectional curvature converging to the
-product of round metrics in `C^∞`. -/
+/-- Conditional diagonal conclusion in the metric carrier of the supplied input.
+The concrete sphere-product proposition is `SphereProduct.LocalHopfProblem`.
+`SphereProduct.positive_metrics_of_background_cover` derives its fixed-parameter positivity
+step from geometric chart estimates. -/
 theorem local_hopf (I : LocalHopfInput) :
     ∃ x : ℕ → I.Met, (∀ n, I.PosSec (x n)) ∧ I.dist.TendstoCInf x I.gprod := by
   obtain ⟨tn, sn, _, _, _, hp, hd⟩ := local_hopf_parameters I
